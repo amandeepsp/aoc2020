@@ -13,3 +13,5 @@ pom.xml.asc
 .hg/
 *.txt
 .calva
+.idea
+*.iml

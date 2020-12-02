@@ -1,8 +1,9 @@
-(ns aoc.day1)
+(ns aoc.day1
+  (:require [aoc.shared :refer [file-lines]]))
 
 (defn part-1
   [file-name]
-  (let [sum-map (->> (.split (slurp file-name) "\n")
+  (let [sum-map (->> (file-lines file-name)
                      (map #(Integer/parseInt %))
                      (reduce #(assoc %1 %2 (- 2020 %2)) {}))]
     (->> (filter (fn [[key val]]
@@ -17,7 +18,7 @@
 (defn part-2
   [file-name]
   (let
-   [numbers (->> (.split (slurp file-name) "\n")
+   [numbers (->> (file-lines file-name)
                  (map #(Integer/parseInt %)))
     sum-map (reduce #(assoc %1 %2 (- 2020 %2)) {} numbers)
     pairs (all-pairs numbers)]
