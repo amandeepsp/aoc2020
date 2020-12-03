@@ -4,11 +4,6 @@
 (defn parse-input [file-name]
   (map seq (file-lines file-name)))
 
-(defn trees-seq [coll n]
-  (let [reps (repeat n coll)]
-    (reduce (fn [acc item]
-              (map #(concat %1 %2) acc item))
-            reps)))
 
 (defn walk-pattern
   ([pattern dx dy]
@@ -16,21 +11,15 @@
   ([pattern dx dy x y]
    (let [height (count pattern)
          width (count (first pattern))]
-     (if (or (>= x width)
-             (>= y height)) nil
+     (if  (>= y height) nil
                             (cons
                               (nth (nth pattern y) x)
-                              (walk-pattern pattern dx dy (+ x dx) (+ y dy)))))))
+                              (walk-pattern pattern dx dy (mod (+ x dx) width) (+ y dy)))))))
 
 (defn is-tree? [char] (= char \#))
 
 (defn count-trees [file-name dx dy]
-  (let [single-pattern (parse-input file-name)
-        width (count (first single-pattern))
-        height (count single-pattern)
-        total-right (* (/ dx dy) height)
-        rep-counts (/ total-right width)
-        pattern (trees-seq single-pattern (int (Math/ceil rep-counts)))]
+  (let [pattern (parse-input file-name)]
     (count (filter is-tree? (walk-pattern pattern dx dy)))))
 
 (defn part-1 [file-name]

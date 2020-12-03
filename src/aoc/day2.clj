@@ -2,32 +2,21 @@
   (:require [clojure.string :as str]
             [aoc.shared :refer [file-lines]]))
 
-(defn split-ranges
-  [range]
-  (str/split range #"-"))
-
-(defn split-key [key]
-  (let [space-split (str/split key #" ")
-        ranges (map #(Integer/parseInt %) (split-ranges (first space-split)))
-        chars (second space-split)]
-    (cons ranges chars)))
+(defn parse-line [s]
+  (let [[_ min max char string] (re-find #"(\d+)-(\d+) (.): (.*)" s)]
+    [(Integer/parseInt min) (Integer/parseInt max) (first char) string]))
 
 (defn parse-input
   [file-name]
   (->> (file-lines file-name)
-       (map #(str/split % #": "))
-       (map (fn [[first & rest]]
-              (cons (split-key first) rest)))))
+       (map parse-line)))
 
 (defn is-valid?
-  [[[range, char], string]]
-  (let [freq-map
-        (into {} (for [[k v]
-                       (group-by identity string)]
-                   [k (count v)]))]
+  [[min max char string]]
+  (let [freq-map (frequencies string)]
     (and (contains? freq-map char)
-         (<= (first range) (get freq-map char))
-         (>= (second range) (get freq-map char)))))
+         (<= min (get freq-map char))
+         (>= max (get freq-map char)))))
 
 (defn count-valid
   [file-name fn]
@@ -38,14 +27,16 @@
   [file-name]
   (count-valid file-name is-valid?))
 
+(defn xor [a b] 
+  (or 
+    (and a (not b)) 
+    (and (not a) b)))
+
 (defn is-valid-part2?
-  [[[range, char], string]]
-  (let [first-index (- (first range) 1)
-        second-index (- (second range) 1)]
-    (or (and (= (nth string first-index) char)
-             (not (= (nth string second-index) char)))
-        (and (not (= (nth string first-index) char))
-             (= (nth string second-index) char)))))
+  [[min max char string]]
+    (xor 
+      (= (nth string (dec min)) char) 
+      (= (nth string (dec max)) char)))
 
 (defn part-2
   [file-name]
