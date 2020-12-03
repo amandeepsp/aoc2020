@@ -1,6 +1,7 @@
 (ns aoc.core
   (:require [aoc.day1]
-            [aoc.day2]))
+            [aoc.day2]
+            [aoc.day3]))
 
 (defn -main
   "Used to dispatch tasks from the command line.
@@ -12,4 +13,6 @@
     "d01.p2" (println (aoc.day1/part-2 "day-01.txt"))
     "d02.p1" (println (aoc.day2/part-1 "day-02.txt"))
     "d02.p2" (println (aoc.day2/part-2 "day-02.txt"))
+    "d03.p1" (println (aoc.day3/part-1 "day-03.txt"))
+    "d03.p2" (println (aoc.day3/part-2 "day-03.txt"))
     (println "not found")))
