@@ -1,6 +1,5 @@
 (ns aoc.day2
-  (:require [clojure.string :as str]
-            [aoc.shared :refer [file-lines]]))
+  (:require [aoc.shared :refer [file-lines]]))
 
 (defn parse-line [s]
   (let [[_ min max char string] (re-find #"(\d+)-(\d+) (.): (.*)" s)]
@@ -14,9 +13,7 @@
 (defn is-valid?
   [[min max char string]]
   (let [freq-map (frequencies string)]
-    (and (contains? freq-map char)
-         (<= min (get freq-map char))
-         (>= max (get freq-map char)))))
+    (<= min (get freq-map char) max)))
 
 (defn count-valid
   [file-name fn]
@@ -27,16 +24,11 @@
   [file-name]
   (count-valid file-name is-valid?))
 
-(defn xor [a b] 
-  (or 
-    (and a (not b)) 
-    (and (not a) b)))
-
 (defn is-valid-part2?
   [[min max char string]]
-    (xor 
-      (= (nth string (dec min)) char) 
-      (= (nth string (dec max)) char)))
+  (not=
+    (= (nth string (dec min)) char)
+    (= (nth string (dec max)) char)))
 
 (defn part-2
   [file-name]

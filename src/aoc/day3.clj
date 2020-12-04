@@ -4,17 +4,16 @@
 (defn parse-input [file-name]
   (map seq (file-lines file-name)))
 
-
 (defn walk-pattern
   ([pattern dx dy]
    (walk-pattern pattern dx dy 0 0))
   ([pattern dx dy x y]
    (let [height (count pattern)
          width (count (first pattern))]
-     (if  (>= y height) nil
-                            (cons
-                              (nth (nth pattern y) x)
-                              (walk-pattern pattern dx dy (mod (+ x dx) width) (+ y dy)))))))
+     (if (>= y height) nil
+                       (cons
+                         (nth (nth pattern y) x)
+                         (walk-pattern pattern dx dy (mod (+ x dx) width) (+ y dy)))))))
 
 (defn is-tree? [char] (= char \#))
 

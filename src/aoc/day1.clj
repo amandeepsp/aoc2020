@@ -18,10 +18,10 @@
 (defn part-2
   [file-name]
   (let
-   [numbers (->> (file-lines file-name)
-                 (map #(Integer/parseInt %)))
-    sum-map (reduce #(assoc %1 %2 (- 2020 %2)) {} numbers)
-    pairs (all-pairs numbers)]
+    [numbers (->> (file-lines file-name)
+                  (map #(Integer/parseInt %)))
+     sum-map (reduce #(assoc %1 %2 (- 2020 %2)) {} numbers)
+     pairs (all-pairs numbers)]
 
     (->> (filter (fn [[first second]]
                    (contains? sum-map (- 2020 (+ first second)))) pairs)
