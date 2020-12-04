@@ -8,7 +8,7 @@
        (map (fn [str]
               (->> (str/split str #"[\n| ]")
                    (map #(str/split % #":"))
-                   (reduce #(assoc %1 (first %2) (second %2)) {}))))))
+                   (into {}))))))
 
 (defn valid-keys? [passport]
   (every? passport mandatory-keys))
@@ -17,24 +17,15 @@
   (let [passports (parse-input (slurp file-name))]
     (count (filter valid-keys? passports))))
 
-(defn parse-height [height-str suffix]
-  (Integer/parseInt
-    (.substring height-str 0 (str/index-of height-str suffix))))
-
 (defn valid-height? [height-str]
-  (cond
-    (str/ends-with? height-str "cm") (<= 150 (parse-height height-str "cm") 193)
-    (str/ends-with? height-str "in") (<= 59 (parse-height height-str "in") 76)
-    :else false))
+  (let [[_ height unit] (re-find #"(\d+)(in|cm)" height-str)]
+    (case unit
+      "cm" (<= 150 (Integer/parseInt height) 193)
+      "in" (<= 59 (Integer/parseInt height) 76)
+      false)))
 
 (defn valid-color? [color-str]
-  (if-not (str/starts-with? color-str "#")
-    false
-    (let [color-values (.substring color-str 1)]
-      (every? (fn [char-val]
-                (or (Character/isDigit char-val)
-                    (<= (int \a) (int char-val) (int \f))))
-              color-values))))
+  (re-matches #"^#[0-9a-f]{6}$" color-str))
 
 (def valid-eye-color-values #{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"})
 
@@ -42,9 +33,7 @@
   (contains? valid-eye-color-values eye-color))
 
 (defn valid-pid? [str-pid]
-  (and (= 9 (count str-pid))
-       (every? (fn [char]
-                 (Character/isDigit char)) str-pid)))
+  (re-matches #"^\d{9}$" str-pid))
 
 (defn valid-value? [[key val]]
   (case key
