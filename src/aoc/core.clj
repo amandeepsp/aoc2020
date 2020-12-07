@@ -21,4 +21,5 @@
     "d04.p2" (println (aoc.day4/part-2 "day4.txt"))
     "d05.p1" (println (aoc.day5/part-1 "day5.txt"))
     "d05.p2" (println (aoc.day5/part-2 "day5.txt"))
+    ;;Use REPL for the rest
     (println "not found")))
