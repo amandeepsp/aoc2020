@@ -4,7 +4,7 @@
 
 (defn parse-line [line]
   (let [[opcode val] (str/split line #" ")]
-    (vector (keyword opcode) (Integer/parseInt val))))
+    [(keyword opcode) (Integer/parseInt val)]))
 
 (defn parse-input [file-name]
   (->> (slurp (io/resource file-name))
@@ -14,8 +14,8 @@
 (defn run-machine [ops]
   (loop [pc 0 acc 0 visited #{}]
     (cond
-      (visited pc) (vector :loop acc)
-      (= pc (count ops)) (vector :term acc)
+      (visited pc) [:loop acc]
+      (= pc (count ops)) [:term acc]
       :else (let [[op val] (get ops pc)]
               (case op
                 :nop (recur (inc pc) acc (conj visited pc))
@@ -26,12 +26,10 @@
   (let [ops (parse-input file-name)]
     (run-machine ops)))
 
-(defn find-error [ops start state]
+(defn run-machine-for-state [ops start state]
   (loop [pc start visited #{}]
     (cond
-      (visited pc) (-> state
-                       (update :unvisited #(remove visited %))
-                       (update :looping-ops into visited))
+      (visited pc) (update state :unvisited #(remove visited %))
       (= pc (count ops)) (-> state
                              (update :unvisited #(remove visited %))
                              (update :halting-ops into visited))
@@ -43,12 +41,11 @@
 
 (defn classify-ops [ops]
   (let [init-state {:halting-ops #{}
-                    :looping-ops #{}
                     :unvisited   (range (count ops))}]
     (loop [state init-state]
       (if (empty? (:unvisited state))
         state
-        (recur (find-error
+        (recur (run-machine-for-state
                  ops
                  (first (:unvisited state))
                  (update state :unvisited next)))))))
@@ -58,7 +55,7 @@
     (loop [index 0]
       (let [[opcode val] (nth ops index)]
         (cond
-          (= index (count ops)) :correct-ops
+          (= index (count ops)) ops
           (and (= :jmp opcode) (halting-ops (inc index))) (assoc ops index [:nop val])
           (and (= :nop opcode) (halting-ops (+ index val))) (assoc ops index [:jmp val])
           :else (recur (inc index)))))))

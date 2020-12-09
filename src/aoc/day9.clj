@@ -8,16 +8,14 @@
        (str/split-lines)
        (mapv #(Long/parseLong %))))
 
-(defn valid-pair? [set-vals [a b]]
-  (and (set-vals [b a]) (not= a b)))
-
-(defn can-sum? [coll sum]
+(defn valid-sum-pairs [coll sum]
   (let [complements (into #{} (map #(vector % (- sum %)) coll))]
     (filter
-      (partial valid-pair? complements)
+      (fn [[a b]]
+        (and (complements [b a]) (not= a b)))
       complements)))
 
-(defn can-diff? [coll diff]
+(defn valid-diff-pairs [coll diff]
   (let [coll-set (into #{} coll)]
     (->> (filter #(coll-set (+ diff %)) coll)
          (map #(vector
@@ -28,7 +26,7 @@
   (loop [index len]
     (cond
       (= index (count numbers)) :no-errors
-      (empty? (can-sum?
+      (empty? (valid-sum-pairs
                 (subvec numbers (- index len) index)
                 (nth numbers index))) (nth numbers index)
       :else (recur (inc index)))))
@@ -40,13 +38,14 @@
 (defn part-2 [file-name]
   (let [numbers (parse-input file-name)
         diff (part-1 file-name)
-        csum (reduce
-               #(conj %1 (+ (last %1) %2))
-               (vector (first numbers))
-               (next numbers))
-        [start end] (first (can-diff? csum diff))
+        csum (reductions + numbers)
+        [start end] (first (valid-diff-pairs csum diff))
         result-vec (subvec numbers (inc start) (inc end))]
-    (prn diff)
-    (+ (reduce min result-vec)
-       (reduce max result-vec))))
+    (+ (reduce min result-vec) (reduce max result-vec))))
+
+(prn (part-1 "day9.txt"))
+;; => 57195069
+
+(prn (part-2 "day9.txt"))
+;; => 7409241
 
