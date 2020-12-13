@@ -70,10 +70,7 @@
     \F [(+ x (* val dx)) (+ y (* val dy)) [dx dy]]))
 
 (def reduced-state*
-  (reduce (fn [state step]
-            (next-state* state step))
-          [0 0 [10 1]]
-          steps))
+  (reduce next-state* [0 0 [10 1]] steps))
 
 ;; Part 2
 (prn (+ (Math/abs (first reduced-state*))
