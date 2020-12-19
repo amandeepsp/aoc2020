@@ -9,3 +9,6 @@
   (reduce (fn [acc elem]
             (or acc elem))
           false coll))
+
+(defn str->int [str]
+  (Long/parseLong str))

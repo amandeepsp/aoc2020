@@ -3,19 +3,16 @@
             [clojure.string :as str]
             [aoc.shared :as shared]))
 
-(defn str->int [str]
-  (Long/parseLong str))
-
 (defn parse-ticket [str-ticket]
   (->> (str/split str-ticket #",")
-       (mapv #(Integer/parseInt %))))
+       (mapv shared/str->int)))
 
 (defn parse-range [range-str]
   (let [[_ type start1 end1 start2 end2] (re-find #"(\D+): (\d+)-(\d+) or (\d+)-(\d+)" range-str)]
-    [type [{:start (str->int start1)
-            :end   (str->int end1)}
-           {:start (str->int start2)
-            :end   (str->int end2)}]]))
+    [type [{:start (shared/str->int start1)
+            :end   (shared/str->int end1)}
+           {:start (shared/str->int start2)
+            :end   (shared/str->int end2)}]]))
 
 (defn parse-input [file-name]
   (let [[ranges-str my-ticket-str tickets-str] (-> (io/resource file-name)
